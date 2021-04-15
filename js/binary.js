@@ -17856,7 +17856,6 @@ module.exports = AssetIndexUI;
 
 var loadScript = __webpack_require__(/*! scriptjs */ "./node_modules/scriptjs/dist/script.js");
 var BinarySocket = __webpack_require__(/*! ../../../../app/base/socket */ "./src/javascript/app/base/socket.js");
-var isEuCountry = __webpack_require__(/*! ../../../../app/common/country_base */ "./src/javascript/app/common/country_base.js").isEuCountry;
 var getLanguage = __webpack_require__(/*! ../../../../_common/language */ "./src/javascript/_common/language.js").get;
 
 var EconomicCalendar = function () {
@@ -17882,11 +17881,7 @@ var EconomicCalendar = function () {
         if (loader) loader.remove();
 
         BinarySocket.wait('website_status', 'authorize', 'landing_company').then(function () {
-            if (isEuCountry()) {
-                $('.calendar-footer').setVisibility(isEuCountry());
-            } else {
-                $('.calendar-footer').setVisibility(!isEuCountry);
-            }
+            $('.calendar-footer').setVisibility(true);
         });
     };
 
