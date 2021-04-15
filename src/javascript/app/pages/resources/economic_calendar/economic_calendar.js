@@ -1,6 +1,5 @@
 const loadScript   = require('scriptjs');
 const BinarySocket = require('../../../../app/base/socket');
-const isEuCountry  = require('../../../../app/common/country_base').isEuCountry;
 const getLanguage  = require('../../../../_common/language').get;
 
 const EconomicCalendar = (() => {
