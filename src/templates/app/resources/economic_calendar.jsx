@@ -14,9 +14,11 @@ const EconomicCalendar = () => (
                     {/* Update anchor links below in case they become outdated */}
                     <div className='left'>
                         <a href='https://www.mql5.com/en/economic-calendar?utm_source=calendar.widget&utm_medium=link&utm_term=mql5.calendar&utm_content=visit.mql5.calendar&utm_campaign=202.calendar.widget' className='logo' target='_blank' rel='noopener noreferrer'>MQL5</a>
-                        
                         <span className='desc'>
-                            <a href='https://www.mql5.com/en/economic-calendar?utm_source=calendar.widget&utm_medium=link&utm_term=mql5.calendar&utm_content=visit.mql5.calendar&utm_campaign=202.calendar.widget' target='_blank' rel='noopener noreferrer'><span>{it.L('Economic Calendar')}</span></a>
+                            <a href='https://www.mql5.com/en/economic-calendar?utm_source=calendar.widget&utm_medium=link&utm_term=mql5.calendar&utm_content=visit.mql5.calendar&utm_campaign=202.calendar.widget' target='_blank' rel='noopener noreferrer'>
+                                <span data-show='eucountry'>{it.L('Economic Calendar')}</span>
+                                <span data-show='-eucountry'>{it.L('Use MetaTrader Economic Calendar')}</span>                            
+                            </a>
                         </span>
                     </div>
                     <div className='right'>
