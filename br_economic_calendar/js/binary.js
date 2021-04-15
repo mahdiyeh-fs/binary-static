@@ -10161,6 +10161,7 @@ var Home = __webpack_require__(/*! ../../static/pages/home */ "./src/javascript/
 var KeepSafe = __webpack_require__(/*! ../../static/pages/keep_safe */ "./src/javascript/static/pages/keep_safe.js");
 var JobDetails = __webpack_require__(/*! ../../static/pages/job_details */ "./src/javascript/static/pages/job_details.js");
 var Platforms = __webpack_require__(/*! ../../static/pages/platforms */ "./src/javascript/static/pages/platforms.js");
+var Mt5Signals = __webpack_require__(/*! ../../static/pages/mt5_signals */ "./src/javascript/static/pages/mt5_signals.js");
 var Regulation = __webpack_require__(/*! ../../static/pages/regulation */ "./src/javascript/static/pages/regulation.js");
 var StaticPages = __webpack_require__(/*! ../../static/pages/static_pages */ "./src/javascript/static/pages/static_pages.js");
 var TermsAndConditions = __webpack_require__(/*! ../../static/pages/tnc */ "./src/javascript/static/pages/tnc.js");
@@ -10246,6 +10247,7 @@ var pages_config = {
     'ib-faq': { module: StaticPages.IBProgrammeFAQ },
     'job-details': { module: JobDetails },
     'keep-safe': { module: KeepSafe },
+    'mt5-signals': { module: Mt5Signals },
     'new-account': { module: NewAccount, not_authenticated: true },
     'open-positions': { module: StaticPages.OpenPositions },
     'open-source-projects': { module: StaticPages.OpenSourceProjects },
@@ -17854,7 +17856,6 @@ module.exports = AssetIndexUI;
 
 var loadScript = __webpack_require__(/*! scriptjs */ "./node_modules/scriptjs/dist/script.js");
 var BinarySocket = __webpack_require__(/*! ../../../../app/base/socket */ "./src/javascript/app/base/socket.js");
-var isEuCountry = __webpack_require__(/*! ../../../../app/common/country_base */ "./src/javascript/app/common/country_base.js").isEuCountry;
 var getLanguage = __webpack_require__(/*! ../../../../_common/language */ "./src/javascript/_common/language.js").get;
 
 var EconomicCalendar = function () {
@@ -17880,7 +17881,7 @@ var EconomicCalendar = function () {
         if (loader) loader.remove();
 
         BinarySocket.wait('website_status', 'authorize', 'landing_company').then(function () {
-            $('.calendar-footer').setVisibility(isEuCountry());
+            $('.calendar-footer').setVisibility(true);
         });
     };
 
@@ -32443,6 +32444,13 @@ var StatementInit = function () {
                 //     .on('click', () => { StatementUI.exportCSV(); });
             }
         }
+
+        if (['deposit', 'withdrawal'].includes(filter)) {
+            document.querySelectorAll('#statement-table .details').forEach(function (item) {
+                return item.remove();
+            });
+        }
+
         showLocalTimeOnHover('td.date');
     };
 
@@ -39083,6 +39091,68 @@ var KeepSafe = function () {
 }();
 
 module.exports = KeepSafe;
+
+/***/ }),
+
+/***/ "./src/javascript/static/pages/mt5_signals.js":
+/*!****************************************************!*\
+  !*** ./src/javascript/static/pages/mt5_signals.js ***!
+  \****************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var BinarySocket = __webpack_require__(/*! ../../app/base/socket */ "./src/javascript/app/base/socket.js");
+var isIndonesia = __webpack_require__(/*! ../../app/common/country_base */ "./src/javascript/app/common/country_base.js").isIndonesia;
+var getElementById = __webpack_require__(/*! ../../_common/common_functions */ "./src/javascript/_common/common_functions.js").getElementById;
+var TabSelector = __webpack_require__(/*! ../../_common/tab_selector */ "./src/javascript/_common/tab_selector.js");
+var isBinaryApp = __webpack_require__(/*! ../../config */ "./src/javascript/config.js").isBinaryApp;
+
+var os_list = [{
+    name: 'mac',
+    url_test: /\.dmg$/
+}, {
+    name: 'windows',
+    url_test: /\.exe$/
+}];
+
+var Mt5Signals = function () {
+    var onLoad = function onLoad() {
+        BinarySocket.wait('website_status').then(function () {
+            $('.desktop-app').setVisibility(isIndonesia() && !isBinaryApp());
+        });
+        TabSelector.onLoad();
+        $.getJSON('https://api.github.com/repos/binary-com/binary-desktop-installers/releases/latest', function () {
+            var data = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : { assets: [] };
+
+            data.assets.some(function (asset) {
+                if (os_list.every(function (os) {
+                    return os.download_url;
+                })) {
+                    return true;
+                }
+                os_list.forEach(function (os) {
+                    if (!os.download_url && os.url_test.test(asset.browser_download_url)) {
+                        os.download_url = asset.browser_download_url;
+                    }
+                });
+                return false;
+            });
+            os_list.forEach(function (os) {
+                var el_button = getElementById('app_' + os.name);
+                el_button.setAttribute('href', os.download_url);
+            });
+        });
+    };
+
+    return {
+        onLoad: onLoad
+    };
+}();
+
+module.exports = Mt5Signals;
 
 /***/ }),
 
