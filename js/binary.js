@@ -1355,29 +1355,30 @@ module.exports = GTM;
 
 var _extends = Object.assign || function (target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i]; for (var key in source) { if (Object.prototype.hasOwnProperty.call(source, key)) { target[key] = source[key]; } } } return target; };
 
-var _require = __webpack_require__(/*! @livechat/customer-sdk */ "./node_modules/@livechat/customer-sdk/dist/customer-sdk.esm.js"),
-    init = _require.init;
-
 var BinarySocket = __webpack_require__(/*! ./socket_base */ "./src/javascript/_common/base/socket_base.js");
 var ClientBase = __webpack_require__(/*! ./client_base */ "./src/javascript/_common/base/client_base.js");
+var TrafficSource = __webpack_require__(/*! ../../app/common/traffic_source */ "./src/javascript/app/common/traffic_source.js");
+var licenseID = __webpack_require__(/*! ../utility */ "./src/javascript/_common/utility.js").lc_licenseID;
 
 var LiveChat = function () {
-    var licenseID = 12049137;
-    var clientID = '66aa088aad5a414484c1fd1fa8a5ace7';
-    var session_variables = { loginid: '', landing_company_shortcode: '', currency: '', residence: '', email: '' };
+    var utm_data = TrafficSource.getData();
+    var utm_source = TrafficSource.getSource(utm_data) || '';
+    var utm_campaign = utm_data.utm_campaign || '';
+    var utm_medium = utm_data.utm_medium || '';
+    var session_variables = { is_logged_in: false, loginid: '', landing_company_shortcode: '', currency: '', residence: '', email: '', utm_source: utm_source, utm_medium: utm_medium, utm_campaign: utm_campaign };
     var client_email = void 0,
         first_name = void 0,
         last_name = void 0;
 
     var setSessionVariables = function setSessionVariables() {
+        var is_logged_in = !!ClientBase.isLoggedIn();
         var loginid = ClientBase.get('loginid');
         var landing_company_shortcode = ClientBase.get('landing_company_shortcode');
         var currency = ClientBase.get('currency');
         var residence = ClientBase.get('residence');
         var email = ClientBase.get('email');
 
-        session_variables = _extends({}, loginid && { loginid: loginid }, landing_company_shortcode && { landing_company_shortcode: landing_company_shortcode }, currency && { currency: currency }, residence && { residence: residence }, email && { email: email });
-
+        session_variables = _extends({}, is_logged_in && { is_logged_in: is_logged_in }, loginid && { loginid: loginid }, landing_company_shortcode && { landing_company_shortcode: landing_company_shortcode }, currency && { currency: currency }, residence && { residence: residence }, email && { email: email }, utm_source && { utm_source: utm_source }, utm_campaign && { utm_campaign: utm_campaign }, utm_medium && { utm_medium: utm_medium });
         window.LiveChatWidget.call('set_session_variables', session_variables);
     };
 
@@ -1432,39 +1433,6 @@ var LiveChat = function () {
                 });
             });
         }
-    };
-
-    // Called when logging out to end ongoing chats if there is any
-    var endLiveChat = function endLiveChat() {
-        return new Promise(function (resolve) {
-            session_variables = { loginid: '', landing_company_shortcode: '', currency: '', residence: '', email: '' };
-            window.LiveChatWidget.call('set_session_variables', session_variables);
-            window.LiveChatWidget.call('set_customer_email', ' ');
-            window.LiveChatWidget.call('set_customer_name', ' ');
-
-            try {
-                var customerSDK = init({
-                    licenseId: licenseID,
-                    clientId: clientID
-                });
-                customerSDK.on('connected', function () {
-                    if (window.LiveChatWidget.get('chat_data')) {
-                        var _window$LiveChatWidge = window.LiveChatWidget.get('chat_data'),
-                            chatId = _window$LiveChatWidge.chatId,
-                            threadId = _window$LiveChatWidge.threadId;
-
-                        if (threadId) {
-                            customerSDK.deactivateChat({ chatId: chatId }).catch(function () {
-                                return null;
-                            });
-                        }
-                    }
-                    resolve();
-                });
-            } catch (e) {
-                resolve();
-            }
-        });
     };
 
     // Delete existing LiveChat instance when there is no chat running
@@ -1523,7 +1491,6 @@ var LiveChat = function () {
     };
 
     return {
-        endLiveChat: endLiveChat,
         initialize: initialize,
         livechatDeletion: livechatDeletion,
         livechatFallback: livechatFallback,
@@ -9823,6 +9790,9 @@ var PromiseClass = function PromiseClass() {
     });
 };
 
+var lc_licenseID = 12049137;
+var lc_clientID = '66aa088aad5a414484c1fd1fa8a5ace7';
+
 module.exports = {
     showLoadingImage: showLoadingImage,
     getHighestZIndex: getHighestZIndex,
@@ -9842,7 +9812,9 @@ module.exports = {
     findParent: findParent,
     getStaticHash: getStaticHash,
     PromiseClass: PromiseClass,
-    removeObjProperties: removeObjProperties
+    removeObjProperties: removeObjProperties,
+    lc_licenseID: lc_licenseID,
+    lc_clientID: lc_clientID
 };
 
 /***/ }),
@@ -10530,22 +10502,26 @@ var _extends = Object.assign || function (target) { for (var i = 1; i < argument
 
 function _defineProperty(obj, key, value) { if (key in obj) { Object.defineProperty(obj, key, { value: value, enumerable: true, configurable: true, writable: true }); } else { obj[key] = value; } return obj; }
 
+var _require = __webpack_require__(/*! @livechat/customer-sdk */ "./node_modules/@livechat/customer-sdk/dist/customer-sdk.esm.js"),
+    init = _require.init;
+
 var BinarySocket = __webpack_require__(/*! ./socket */ "./src/javascript/app/base/socket.js");
 var Defaults = __webpack_require__(/*! ../pages/trade/defaults */ "./src/javascript/app/pages/trade/defaults.js");
 var RealityCheckData = __webpack_require__(/*! ../pages/user/reality_check/reality_check.data */ "./src/javascript/app/pages/user/reality_check/reality_check.data.js");
 var ClientBase = __webpack_require__(/*! ../../_common/base/client_base */ "./src/javascript/_common/base/client_base.js");
 var GTM = __webpack_require__(/*! ../../_common/base/gtm */ "./src/javascript/_common/base/gtm.js");
 var SocketCache = __webpack_require__(/*! ../../_common/base/socket_cache */ "./src/javascript/_common/base/socket_cache.js");
-var LiveChat = __webpack_require__(/*! ../../_common/base/livechat */ "./src/javascript/_common/base/livechat.js");
 
-var _require = __webpack_require__(/*! ../../_common/utility */ "./src/javascript/_common/utility.js"),
-    isBinaryDomain = _require.isBinaryDomain;
+var _require2 = __webpack_require__(/*! ../../_common/utility */ "./src/javascript/_common/utility.js"),
+    isBinaryDomain = _require2.isBinaryDomain;
 
 var getElementById = __webpack_require__(/*! ../../_common/common_functions */ "./src/javascript/_common/common_functions.js").getElementById;
 var removeCookies = __webpack_require__(/*! ../../_common/storage */ "./src/javascript/_common/storage.js").removeCookies;
 var urlFor = __webpack_require__(/*! ../../_common/url */ "./src/javascript/_common/url.js").urlFor;
 var applyToAllElements = __webpack_require__(/*! ../../_common/utility */ "./src/javascript/_common/utility.js").applyToAllElements;
 var getPropertyValue = __webpack_require__(/*! ../../_common/utility */ "./src/javascript/_common/utility.js").getPropertyValue;
+var licenseID = __webpack_require__(/*! ../../_common/utility */ "./src/javascript/_common/utility.js").lc_licenseID;
+var clientID = __webpack_require__(/*! ../../_common/utility */ "./src/javascript/_common/utility.js").lc_clientID;
 
 var Client = function () {
 
@@ -10625,6 +10601,39 @@ var Client = function () {
         }
     };
 
+    // Called when logging out to end ongoing chats if there is any
+    var endLiveChat = function endLiveChat() {
+        return new Promise(function (resolve) {
+            var session_variables = { loginid: '', landing_company_shortcode: '', currency: '', residence: '', email: '' };
+            window.LiveChatWidget.call('set_session_variables', session_variables);
+            window.LiveChatWidget.call('set_customer_email', ' ');
+            window.LiveChatWidget.call('set_customer_name', ' ');
+
+            try {
+                var customerSDK = init({
+                    licenseId: licenseID,
+                    clientId: clientID
+                });
+                customerSDK.on('connected', function () {
+                    if (window.LiveChatWidget.get('chat_data')) {
+                        var _window$LiveChatWidge = window.LiveChatWidget.get('chat_data'),
+                            chatId = _window$LiveChatWidge.chatId,
+                            threadId = _window$LiveChatWidge.threadId;
+
+                        if (threadId) {
+                            customerSDK.deactivateChat({ chatId: chatId }).catch(function () {
+                                return null;
+                            });
+                        }
+                    }
+                    resolve();
+                });
+            } catch (e) {
+                resolve();
+            }
+        });
+    };
+
     var doLogout = function doLogout(response) {
 
         if (response.logout !== 1) return;
@@ -10640,7 +10649,7 @@ var Client = function () {
         SocketCache.clear();
         RealityCheckData.clear();
         if (isBinaryDomain()) {
-            LiveChat.endLiveChat().then(function () {
+            endLiveChat().then(function () {
                 redirection(response);
             });
         } else {
@@ -16722,7 +16731,7 @@ var DepositWithdraw = function () {
                                 if (cashier_type === 'withdraw') {
                                     var limit = State.getResponse('get_limits.remainder');
                                     if (typeof limit !== 'undefined' && +limit < Currency.getMinWithdrawal(Client.get('currency'))) {
-                                        showError('custom_error', localize('You have reached the withdrawal limit.'));
+                                        showError('custom_error', localize('You have reached the withdrawal limit. Please upload your proof of identity and address to lift your withdrawal limit and proceed with your withdrawal.'));
                                         return;
                                     }
                                 }
@@ -27598,6 +27607,7 @@ var Authenticate = function () {
 
             showCTAButton('document', 'pending');
             $('#upload_complete').setVisibility(1);
+            $('#msg_personal_details').setVisibility(0);
         });
     };
 
@@ -27743,6 +27753,7 @@ var Authenticate = function () {
             $('#authentication_loading').setVisibility(1);
             setTimeout(function () {
                 BinarySocket.send({ get_account_status: 1 }, { forced: true }).then(function () {
+                    $('#msg_personal_details').setVisibility(0);
                     $('#upload_complete').setVisibility(1);
                     Header.displayAccountStatus();
                     $('#authentication_loading').setVisibility(0);
@@ -27875,7 +27886,7 @@ var Authenticate = function () {
                             }
 
                             $('#personal_details_error').setVisibility(1);
-                            _context2.next = 64;
+                            _context2.next = 65;
                             break;
 
                         case 28:
@@ -27927,7 +27938,7 @@ var Authenticate = function () {
                                 });
                             }
 
-                            _context2.next = 64;
+                            _context2.next = 65;
                             break;
 
                         case 37:
@@ -27937,12 +27948,12 @@ var Authenticate = function () {
                             }
 
                             $('#limited_poi').setVisibility(1);
-                            _context2.next = 64;
+                            _context2.next = 65;
                             break;
 
                         case 41:
                             if (needs_verification.includes('identity')) {
-                                _context2.next = 63;
+                                _context2.next = 64;
                                 break;
                             }
 
@@ -27951,111 +27962,113 @@ var Authenticate = function () {
                                 Url.updateParamsWithoutReload({ authentication_tab: 'poa' }, true);
                             }
                             _context2.t0 = identity.status;
-                            _context2.next = _context2.t0 === 'none' ? 46 : _context2.t0 === 'pending' ? 48 : _context2.t0 === 'rejected' ? 51 : _context2.t0 === 'verified' ? 53 : _context2.t0 === 'expired' ? 56 : _context2.t0 === 'suspected' ? 58 : 60;
+                            _context2.next = _context2.t0 === 'none' ? 46 : _context2.t0 === 'pending' ? 49 : _context2.t0 === 'rejected' ? 52 : _context2.t0 === 'verified' ? 54 : _context2.t0 === 'expired' ? 57 : _context2.t0 === 'suspected' ? 59 : 61;
                             break;
 
                         case 46:
+                            $('#msg_personal_details').setVisibility(1);
                             if (onfido_unsupported) {
                                 $('#not_authenticated_uns').setVisibility(1);
                                 initUnsupported();
                             } else {
                                 initOnfido(service_token_response.token, documents_supported, country_code);
                             }
-                            return _context2.abrupt('break', 61);
+                            return _context2.abrupt('break', 62);
 
-                        case 48:
+                        case 49:
                             showCTAButton('document', 'pending');
 
                             $('#upload_complete').setVisibility(1);
-                            return _context2.abrupt('break', 61);
+                            return _context2.abrupt('break', 62);
 
-                        case 51:
+                        case 52:
                             $('#unverified').setVisibility(1);
-                            return _context2.abrupt('break', 61);
+                            return _context2.abrupt('break', 62);
 
-                        case 53:
+                        case 54:
                             showCTAButton('document', 'verified');
                             $('#verified').setVisibility(1);
-                            return _context2.abrupt('break', 61);
+                            return _context2.abrupt('break', 62);
 
-                        case 56:
+                        case 57:
                             $('#expired_poi').setVisibility(1);
-                            return _context2.abrupt('break', 61);
+                            return _context2.abrupt('break', 62);
 
-                        case 58:
+                        case 59:
                             $('#unverified').setVisibility(1);
-                            return _context2.abrupt('break', 61);
-
-                        case 60:
-                            return _context2.abrupt('break', 61);
+                            return _context2.abrupt('break', 62);
 
                         case 61:
-                            _context2.next = 64;
+                            return _context2.abrupt('break', 62);
+
+                        case 62:
+                            _context2.next = 65;
                             break;
 
-                        case 63:
+                        case 64:
                             // eslint-disable-next-line no-lonely-if
                             if (onfido_unsupported) {
                                 $('#not_authenticated_uns').setVisibility(1);
                                 initUnsupported();
                             } else {
+                                $('#msg_personal_details').setVisibility(1);
                                 initOnfido(service_token_response.token, documents_supported, country_code);
                             }
 
-                        case 64:
+                        case 65:
                             if (needs_verification.includes('document')) {
-                                _context2.next = 86;
+                                _context2.next = 87;
                                 break;
                             }
 
                             _context2.t1 = document.status;
-                            _context2.next = _context2.t1 === 'none' ? 68 : _context2.t1 === 'pending' ? 71 : _context2.t1 === 'rejected' ? 74 : _context2.t1 === 'suspected' ? 76 : _context2.t1 === 'verified' ? 78 : _context2.t1 === 'expired' ? 81 : 83;
+                            _context2.next = _context2.t1 === 'none' ? 69 : _context2.t1 === 'pending' ? 72 : _context2.t1 === 'rejected' ? 75 : _context2.t1 === 'suspected' ? 77 : _context2.t1 === 'verified' ? 79 : _context2.t1 === 'expired' ? 82 : 84;
                             break;
 
-                        case 68:
+                        case 69:
                             init();
                             $('#not_authenticated').setVisibility(1);
-                            return _context2.abrupt('break', 84);
+                            return _context2.abrupt('break', 85);
 
-                        case 71:
+                        case 72:
                             showCTAButton('identity', 'pending');
                             $('#pending_poa').setVisibility(1);
-                            return _context2.abrupt('break', 84);
+                            return _context2.abrupt('break', 85);
 
-                        case 74:
+                        case 75:
                             $('#unverified_poa').setVisibility(1);
-                            return _context2.abrupt('break', 84);
+                            return _context2.abrupt('break', 85);
 
-                        case 76:
+                        case 77:
                             $('#unverified_poa').setVisibility(1);
-                            return _context2.abrupt('break', 84);
+                            return _context2.abrupt('break', 85);
 
-                        case 78:
+                        case 79:
                             showCTAButton('document', 'verified');
                             $('#verified_poa').setVisibility(1);
-                            return _context2.abrupt('break', 84);
+                            return _context2.abrupt('break', 85);
 
-                        case 81:
+                        case 82:
                             $('#expired_poa').setVisibility(1);
-                            return _context2.abrupt('break', 84);
-
-                        case 83:
-                            return _context2.abrupt('break', 84);
+                            return _context2.abrupt('break', 85);
 
                         case 84:
-                            _context2.next = 88;
+                            return _context2.abrupt('break', 85);
+
+                        case 85:
+                            _context2.next = 89;
                             break;
 
-                        case 86:
+                        case 87:
                             init();
                             $('#not_authenticated').setVisibility(1);
 
-                        case 88:
+                        case 89:
 
                             $('#authentication_loading').setVisibility(0);
                             TabSelector.updateTabDisplay();
 
-                        case 90:
+                        case 91:
                         case 'end':
                             return _context2.stop();
                     }
