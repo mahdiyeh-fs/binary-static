@@ -695,6 +695,13 @@ var ClientBase = function () {
         return is_current ? currency && !get('is_virtual') && has_account_criteria && !isCryptocurrency(currency) : has_account_criteria;
     };
 
+    var isOptionsBlocked = function isOptionsBlocked() {
+        var options_blocked_countries = ['au'];
+        var country = State.getResponse('authorize.country');
+
+        return options_blocked_countries.includes(country);
+    };
+
     return {
         init: init,
         isLoggedIn: isLoggedIn,
@@ -705,6 +712,7 @@ var ClientBase = function () {
         getAccountType: getAccountType,
         isAccountOfType: isAccountOfType,
         isAuthenticationAllowed: isAuthenticationAllowed,
+        isOptionsBlocked: isOptionsBlocked,
         getAccountOfType: getAccountOfType,
         hasAccountType: hasAccountType,
         hasCurrencyType: hasCurrencyType,
@@ -1361,16 +1369,16 @@ var TrafficSource = __webpack_require__(/*! ../../app/common/traffic_source */ "
 var licenseID = __webpack_require__(/*! ../utility */ "./src/javascript/_common/utility.js").lc_licenseID;
 
 var LiveChat = function () {
-    var utm_data = TrafficSource.getData();
-    var utm_source = TrafficSource.getSource(utm_data) || '';
-    var utm_campaign = utm_data.utm_campaign || '';
-    var utm_medium = utm_data.utm_medium || '';
-    var session_variables = { is_logged_in: false, loginid: '', landing_company_shortcode: '', currency: '', residence: '', email: '', utm_source: utm_source, utm_medium: utm_medium, utm_campaign: utm_campaign };
+
     var client_email = void 0,
         first_name = void 0,
         last_name = void 0;
 
     var setSessionVariables = function setSessionVariables() {
+        var utm_data = TrafficSource.getData();
+        var utm_source = TrafficSource.getSource(utm_data);
+        var utm_campaign = utm_data.utm_campaign;
+        var utm_medium = utm_data.utm_medium;
         var is_logged_in = !!ClientBase.isLoggedIn();
         var loginid = ClientBase.get('loginid');
         var landing_company_shortcode = ClientBase.get('landing_company_shortcode');
@@ -1378,7 +1386,9 @@ var LiveChat = function () {
         var residence = ClientBase.get('residence');
         var email = ClientBase.get('email');
 
-        session_variables = _extends({}, is_logged_in && { is_logged_in: is_logged_in }, loginid && { loginid: loginid }, landing_company_shortcode && { landing_company_shortcode: landing_company_shortcode }, currency && { currency: currency }, residence && { residence: residence }, email && { email: email }, utm_source && { utm_source: utm_source }, utm_campaign && { utm_campaign: utm_campaign }, utm_medium && { utm_medium: utm_medium });
+        var session_variables = _extends({
+            is_logged_in: is_logged_in
+        }, loginid && { loginid: loginid }, landing_company_shortcode && { landing_company_shortcode: landing_company_shortcode }, currency && { currency: currency }, residence && { residence: residence }, email && { email: email }, utm_source && { utm_source: utm_source }, utm_campaign && { utm_campaign: utm_campaign }, utm_medium && { utm_medium: utm_medium });
         window.LiveChatWidget.call('set_session_variables', session_variables);
     };
 
@@ -1404,7 +1414,7 @@ var LiveChat = function () {
     var initialize = function initialize() {
         if (window.LiveChatWidget) {
             window.LiveChatWidget.on('ready', function () {
-                window.LiveChatWidget.call('set_session_variables', session_variables);
+                setSessionVariables();
                 if (!ClientBase.isLoggedIn()) {
                     window.LC_API.on_chat_ended = function () {
                         window.LiveChatWidget.call('set_customer_email', ' ');
@@ -8423,7 +8433,7 @@ var Scroll = function () {
                 if (scroll_top + $sidebar[0].offsetHeight > $sidebar_container[0].offsetHeight + $sidebar_container.offset().top) {
                     $sidebar.css({ position: 'absolute', bottom: 0, top: '', 'max-width': width, 'width': '100%' });
                 } else if (scroll_top > sticky_navigation_offset_top) {
-                    $sidebar.css({ position: 'fixed', top: 0, bottom: '', 'max-width': width, 'width': '100%' });
+                    $sidebar.css({ position: 'sticky', top: 0, bottom: '', 'max-width': width, 'width': '100%' });
                 } else {
                     $sidebar.css({ position: 'relative' });
                 }
@@ -9948,6 +9958,9 @@ var BinaryLoader = function () {
         },
         no_mf: function no_mf() {
             return localize('Sorry, but binary options trading is not available in your financial account.');
+        },
+        options_blocked: function options_blocked() {
+            return localize('Sorry, but binary options trading is not available in your country.');
         }
     };
 
@@ -9984,6 +9997,11 @@ var BinaryLoader = function () {
                 return displayMessage(error_messages.no_mf());
             });
         }
+        if (config.no_blocked_country && Client.isLoggedIn() && Client.isOptionsBlocked()) {
+            BinarySocket.wait('authorize').then(function () {
+                return displayMessage(error_messages.options_blocked());
+            });
+        }
 
         BinarySocket.setOnDisconnect(active_script.onDisconnect);
     };
@@ -10007,7 +10025,7 @@ var BinaryLoader = function () {
             return;
         }
 
-        var div_container = createElement('div', { class: 'logged_out_title_container', html: Client.isAccountOfType('financial') ? '' : content.getElementsByTagName('h1')[0] || '' });
+        var div_container = createElement('div', { class: 'logged_out_title_container', html: Client.isAccountOfType('financial') || Client.isOptionsBlocked() ? '' : content.getElementsByTagName('h1')[0] || '' });
         var div_notice = createElement('p', { class: 'center-text notice-msg', html: localized_message });
 
         div_container.appendChild(div_notice);
@@ -10202,7 +10220,7 @@ var pages_config = {
     statementws: { module: Statement, is_authenticated: true, needs_currency: true },
     tnc_approvalws: { module: TNCApproval, is_authenticated: true, only_real: true },
     top_up_virtualws: { module: TopUpVirtual, is_authenticated: true, only_virtual: true },
-    trading: { module: TradePage, needs_currency: true, no_mf: true },
+    trading: { module: TradePage, needs_currency: true, no_mf: true, no_blocked_country: true },
     transferws: { module: PaymentAgentTransfer, is_authenticated: true, only_real: true },
     two_factor_authentication: { module: TwoFactorAuthentication, is_authenticated: true },
     virtualws: { module: VirtualAccOpening, not_authenticated: true },
@@ -11014,7 +11032,7 @@ var Header = function () {
 
     var logoOnClick = function logoOnClick() {
         if (Client.isLoggedIn()) {
-            var url = Client.isAccountOfType('financial') ? Url.urlFor('user/metatrader') : Client.defaultRedirectUrl();
+            var url = Client.isAccountOfType('financial') || Client.isOptionsBlocked() ? Url.urlFor('user/metatrader') : Client.defaultRedirectUrl();
             BinaryPjax.load(url);
         } else {
             BinaryPjax.load(Url.urlFor(''));
@@ -11581,7 +11599,7 @@ var LoggedInHandler = function () {
             if (set_default) {
                 var lang_cookie = urlLang(redirect_url) || Cookies.get('language');
                 var language = getLanguage();
-                redirect_url = Client.isAccountOfType('financial') ? urlFor('user/metatrader') : Client.defaultRedirectUrl();
+                redirect_url = Client.isAccountOfType('financial') || Client.isOptionsBlocked() ? urlFor('user/metatrader') : Client.defaultRedirectUrl();
                 if (lang_cookie && lang_cookie !== language) {
                     redirect_url = redirect_url.replace(new RegExp('/' + language + '/', 'i'), '/' + lang_cookie.toLowerCase() + '/');
                 }
@@ -13683,6 +13701,7 @@ var updateTabDisplay = __webpack_require__(/*! ../../_common/tab_selector */ "./
 var visible_classname = 'data-show-visible';
 var mt_company_rule = 'mtcompany';
 var eu_country_rule = 'eucountry';
+var options_blocked_rule = 'optionsblocked';
 
 var ContentVisibility = function () {
     var $center_select_m = void 0;
@@ -13790,6 +13809,7 @@ var ContentVisibility = function () {
         var rule_set_has_current = rule_set.has(current_landing_company_shortcode);
         var rule_set_has_mt = rule_set.has(mt_company_rule);
         var rule_set_has_eu_country = rule_set.has(eu_country_rule);
+        var options_blocked = rule_set.has(options_blocked_rule);
 
         var show_element = false;
 
@@ -13808,6 +13828,9 @@ var ContentVisibility = function () {
             if (arr_mt5fin_shortcodes.some(function (el) {
                 return mt5fin_rules.includes(el);
             })) show_element = !is_exclude;
+        }
+        if (options_blocked && Client.isOptionsBlocked()) {
+            show_element = !is_exclude;
         }
 
         return show_element;
@@ -16369,6 +16392,7 @@ function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, a
 var BinaryPjax = __webpack_require__(/*! ../../base/binary_pjax */ "./src/javascript/app/base/binary_pjax.js");
 var Client = __webpack_require__(/*! ../../base/client */ "./src/javascript/app/base/client.js");
 var BinarySocket = __webpack_require__(/*! ../../base/socket */ "./src/javascript/app/base/socket.js");
+var Header = __webpack_require__(/*! ../../base/header */ "./src/javascript/app/base/header.js");
 var Dialog = __webpack_require__(/*! ../../common/attach_dom/dialog */ "./src/javascript/app/common/attach_dom/dialog.js");
 var Currency = __webpack_require__(/*! ../../common/currency */ "./src/javascript/app/common/currency.js");
 var FormManager = __webpack_require__(/*! ../../common/form_manager */ "./src/javascript/app/common/form_manager.js");
@@ -16732,6 +16756,9 @@ var DepositWithdraw = function () {
                                     var limit = State.getResponse('get_limits.remainder');
                                     if (typeof limit !== 'undefined' && +limit < Currency.getMinWithdrawal(Client.get('currency'))) {
                                         showError('custom_error', localize('You have reached the withdrawal limit. Please upload your proof of identity and address to lift your withdrawal limit and proceed with your withdrawal.'));
+                                        BinarySocket.send({ get_account_status: 1 }).then(function () {
+                                            return Header.displayAccountStatus();
+                                        });
                                         return;
                                     }
                                 }
