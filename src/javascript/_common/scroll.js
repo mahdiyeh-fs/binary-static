@@ -1,6 +1,5 @@
 const Scroll = (() => {
-    let $main_container;
-    let $window_location;
+    let $main_container,$window_location;
 
     const sidebarScroll = ($container) => {
         $main_container = $container;
@@ -94,12 +93,11 @@ const Scroll = (() => {
         });
     };
 
-    
     return {
         sidebarScroll,
         scrollToTop,
         offScroll: () => {
-            if ( window.location.pathname !== $window_location) {
+            if (window.location.pathname !== $window_location) {
                 $(window).off('scroll');
             }
 
