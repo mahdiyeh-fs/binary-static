@@ -9976,7 +9976,7 @@ var BinaryLoader = function () {
         options_blocked: function options_blocked() {
             return localize('Sorry, but binary options trading is not available in your country.');
         },
-        residance_blocked: function residance_blocked() {
+        residence_blocked: function residence_blocked() {
             return localize('Sorry, this page is not available in your country of residence.');
         }
     };
@@ -10011,8 +10011,8 @@ var BinaryLoader = function () {
         }
         if (config.no_mf && Client.isLoggedIn() && Client.isAccountOfType('financial')) {
             BinarySocket.wait('authorize').then(function () {
-                if (this_page === 'platforms') {
-                    displayMessage(error_messages.residance_blocked());
+                if (config.msg_residence_blocked) {
+                    displayMessage(error_messages.residence_blocked());
                 } else {
                     displayMessage(error_messages.no_mf());
                 }
@@ -10021,8 +10021,8 @@ var BinaryLoader = function () {
 
         BinarySocket.wait('authorize').then(function () {
             if (config.no_blocked_country && Client.isLoggedIn() && Client.isOptionsBlocked()) {
-                if (this_page === 'platforms') {
-                    displayMessage(error_messages.residance_blocked());
+                if (config.msg_residence_blocked) {
+                    displayMessage(error_messages.residence_blocked());
                 } else {
                     displayMessage(error_messages.options_blocked());
                 }
@@ -10232,7 +10232,7 @@ var pages_config = {
     overview: { module: Dashboard },
     payment_agent_listws: { module: PaymentAgentList, is_authenticated: true },
     payment_methods: { module: Cashier.PaymentMethods },
-    platforms: { module: Platforms, no_mf: true, no_blocked_country: true },
+    platforms: { module: Platforms, no_mf: true, no_blocked_country: true, msg_residence_blocked: true },
     portfoliows: { module: Portfolio, is_authenticated: true, needs_currency: true },
     professional: { module: professionalClient, is_authenticated: true, only_real: true },
     profit_tablews: { module: ProfitTable, is_authenticated: true, needs_currency: true },
