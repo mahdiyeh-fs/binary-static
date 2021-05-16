@@ -39306,8 +39306,10 @@ module.exports = Mt5Signals;
 var BinarySocket = __webpack_require__(/*! ../../app/base/socket */ "./src/javascript/app/base/socket.js");
 var isIndonesia = __webpack_require__(/*! ../../app/common/country_base */ "./src/javascript/app/common/country_base.js").isIndonesia;
 var getElementById = __webpack_require__(/*! ../../_common/common_functions */ "./src/javascript/_common/common_functions.js").getElementById;
+var createElement = __webpack_require__(/*! ../../_common/utility */ "./src/javascript/_common/utility.js").createElement;
 var TabSelector = __webpack_require__(/*! ../../_common/tab_selector */ "./src/javascript/_common/tab_selector.js");
 var isBinaryApp = __webpack_require__(/*! ../../config */ "./src/javascript/config.js").isBinaryApp;
+var showLoadingImage = __webpack_require__(/*! ../../_common/utility */ "./src/javascript/_common/utility.js").showLoadingImage;
 
 var os_list = [{
     name: 'mac',
@@ -39319,7 +39321,15 @@ var os_list = [{
 
 var Platforms = function () {
     var onLoad = function onLoad() {
+        var content_holder = getElementById('content-holder');
+        var content = getElementById('content');
+        var loading_spinner = createElement('div', { html: '' });
+        content_holder.appendChild(loading_spinner);
+        content.setVisibility(0);
+        showLoadingImage(loading_spinner);
         BinarySocket.wait('website_status').then(function () {
+            content_holder.removeChild(loading_spinner);
+            content.setVisibility(1);
             $('.desktop-app').setVisibility(isIndonesia() && !isBinaryApp());
         });
         TabSelector.onLoad();
