@@ -19,6 +19,7 @@ const isStorageSupported = require('../../_common/storage').isStorageSupported;
 const ThirdPartyLinks = require('../../_common/third_party_links');
 const urlFor = require('../../_common/url').urlFor;
 const createElement = require('../../_common/utility').createElement;
+const showLoadingImage = require('../../_common/utility').showLoadingImage;
 
 const BinaryLoader = (() => {
     let container;
@@ -115,6 +116,7 @@ const BinaryLoader = (() => {
     const loadHandler = (this_page) => {
         const config = { ...pages_config[this_page] };
         active_script = config.module;
+        addLoader();
         if (config.is_authenticated) {
             if (!Client.isLoggedIn()) {
                 displayMessage(error_messages.login());
@@ -162,6 +164,19 @@ const BinaryLoader = (() => {
         });
 
         BinarySocket.setOnDisconnect(active_script.onDisconnect);
+    };
+
+    const addLoader = () => {
+        container = getElementById('content-holder');
+        const content = getElementById('content');
+        const loading_spinner = createElement('div', { html: '' });
+        container.appendChild(loading_spinner);
+        content.setVisibility(0);
+        showLoadingImage(loading_spinner);
+        BinarySocket.wait('authorize').then(() => {
+            content.setVisibility(1);
+            container.removeChild(loading_spinner);
+        });
     };
 
     const loadActiveScript = (config) => {
