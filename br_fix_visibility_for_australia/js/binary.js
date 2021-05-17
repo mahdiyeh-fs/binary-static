@@ -9876,6 +9876,7 @@ var isStorageSupported = __webpack_require__(/*! ../../_common/storage */ "./src
 var ThirdPartyLinks = __webpack_require__(/*! ../../_common/third_party_links */ "./src/javascript/_common/third_party_links.js");
 var urlFor = __webpack_require__(/*! ../../_common/url */ "./src/javascript/_common/url.js").urlFor;
 var createElement = __webpack_require__(/*! ../../_common/utility */ "./src/javascript/_common/utility.js").createElement;
+var showLoadingImage = __webpack_require__(/*! ../../_common/utility */ "./src/javascript/_common/utility.js").showLoadingImage;
 
 var BinaryLoader = function () {
     var container = void 0;
@@ -9984,6 +9985,7 @@ var BinaryLoader = function () {
     var loadHandler = function loadHandler(this_page) {
         var config = _extends({}, pages_config[this_page]);
         active_script = config.module;
+        addLoader();
         if (config.is_authenticated) {
             if (!Client.isLoggedIn()) {
                 displayMessage(error_messages.login());
@@ -10030,6 +10032,19 @@ var BinaryLoader = function () {
         });
 
         BinarySocket.setOnDisconnect(active_script.onDisconnect);
+    };
+
+    var addLoader = function addLoader() {
+        container = getElementById('content-holder');
+        var content = getElementById('content');
+        var loading_spinner = createElement('div', { html: '' });
+        container.appendChild(loading_spinner);
+        content.setVisibility(0);
+        showLoadingImage(loading_spinner);
+        BinarySocket.wait('authorize').then(function () {
+            content.setVisibility(1);
+            container.removeChild(loading_spinner);
+        });
     };
 
     var loadActiveScript = function loadActiveScript(config) {
@@ -39306,10 +39321,8 @@ module.exports = Mt5Signals;
 var BinarySocket = __webpack_require__(/*! ../../app/base/socket */ "./src/javascript/app/base/socket.js");
 var isIndonesia = __webpack_require__(/*! ../../app/common/country_base */ "./src/javascript/app/common/country_base.js").isIndonesia;
 var getElementById = __webpack_require__(/*! ../../_common/common_functions */ "./src/javascript/_common/common_functions.js").getElementById;
-var createElement = __webpack_require__(/*! ../../_common/utility */ "./src/javascript/_common/utility.js").createElement;
 var TabSelector = __webpack_require__(/*! ../../_common/tab_selector */ "./src/javascript/_common/tab_selector.js");
 var isBinaryApp = __webpack_require__(/*! ../../config */ "./src/javascript/config.js").isBinaryApp;
-var showLoadingImage = __webpack_require__(/*! ../../_common/utility */ "./src/javascript/_common/utility.js").showLoadingImage;
 
 var os_list = [{
     name: 'mac',
@@ -39321,15 +39334,7 @@ var os_list = [{
 
 var Platforms = function () {
     var onLoad = function onLoad() {
-        var content_holder = getElementById('content-holder');
-        var content = getElementById('content');
-        var loading_spinner = createElement('div', { html: '' });
-        content_holder.appendChild(loading_spinner);
-        content.setVisibility(0);
-        showLoadingImage(loading_spinner);
         BinarySocket.wait('website_status').then(function () {
-            content_holder.removeChild(loading_spinner);
-            content.setVisibility(1);
             $('.desktop-app').setVisibility(isIndonesia() && !isBinaryApp());
         });
         TabSelector.onLoad();
