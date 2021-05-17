@@ -35,10 +35,11 @@ const DerivBanner = (() => {
     const showBanner = () => {
         if (deriv_banner_type === banner_types.rebranding) {
             el_banner_to_show = el_rebranding_banner_container;
+            el_banner_to_show.setVisibility(0);
         } else {
             el_banner_to_show = el_multiplier_banner_container;
+            el_banner_to_show.setVisibility(1);
         }
-        el_banner_to_show.setVisibility(1);
     };
 
     const chooseBanner = () => {
