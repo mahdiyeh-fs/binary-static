@@ -3,6 +3,8 @@ const isIndonesia    = require('../../app/common/country_base').isIndonesia;
 const getElementById = require('../../_common/common_functions').getElementById;
 const TabSelector    = require('../../_common/tab_selector');
 const isBinaryApp    = require('../../config').isBinaryApp;
+const createElement = require('../../_common/utility').createElement;
+const showLoadingImage = require('../../_common/utility').showLoadingImage;
 
 const os_list = [
     {
@@ -19,8 +21,21 @@ const os_list = [
     // }
 ];
 
+const addLoader = () => {
+    const container = getElementById('content-holder');
+    const content = getElementById('content');
+    const loading_spinner = createElement('div', { html: '' });
+    container.appendChild(loading_spinner);
+    content.setVisibility(0);
+    showLoadingImage(loading_spinner);
+    BinarySocket.wait('authorize').then(() => {
+        content.setVisibility(1);
+        container.removeChild(loading_spinner);
+    });
+};
 const Platforms = (() => {
     const onLoad = () => {
+        addLoader();
         BinarySocket.wait('website_status').then(() => {
             $('.desktop-app').setVisibility(isIndonesia() && !isBinaryApp());
         });
