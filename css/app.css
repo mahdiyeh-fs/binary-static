@@ -709,10 +709,6 @@ tbody#instruments > tr > td {
   background-color: #fff; }
   .inpage_popup_container .inpage_popup_content_box {
     border: 0; }
-    @media screen and (max-width: 480px) {
-      .inpage_popup_container .inpage_popup_content_box {
-        max-height: 100vh;
-        overflow-y: scroll; } }
     .inpage_popup_container .inpage_popup_content_box #contract_win_status {
       line-height: 30px; }
       .inpage_popup_container .inpage_popup_content_box #contract_win_status.won {
@@ -785,9 +781,6 @@ tbody#instruments > tr > td {
           text-align: center; }
         .inpage_popup_container .inpage_popup_content_box #sell_content_wrapper #sell_details_table #trade_details_message, .inpage_popup_container .inpage_popup_content_box #sell_content_wrapper #sell_details_audit #trade_details_message {
           font-style: italic; }
-        @media screen and (max-width: 480px) {
-          .inpage_popup_container .inpage_popup_content_box #sell_content_wrapper #sell_details_table #trade_details_bottom, .inpage_popup_container .inpage_popup_content_box #sell_content_wrapper #sell_details_audit #trade_details_bottom {
-            padding-bottom: 10px; } }
         .inpage_popup_container .inpage_popup_content_box #sell_content_wrapper #sell_details_table #contract_sell_message, .inpage_popup_container .inpage_popup_content_box #sell_content_wrapper #sell_details_audit #contract_sell_message {
           font-size: 0.8695652174rem;
           line-height: 20px; }
