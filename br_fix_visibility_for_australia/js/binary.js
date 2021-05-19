@@ -39308,8 +39308,6 @@ var isIndonesia = __webpack_require__(/*! ../../app/common/country_base */ "./sr
 var getElementById = __webpack_require__(/*! ../../_common/common_functions */ "./src/javascript/_common/common_functions.js").getElementById;
 var TabSelector = __webpack_require__(/*! ../../_common/tab_selector */ "./src/javascript/_common/tab_selector.js");
 var isBinaryApp = __webpack_require__(/*! ../../config */ "./src/javascript/config.js").isBinaryApp;
-var createElement = __webpack_require__(/*! ../../_common/utility */ "./src/javascript/_common/utility.js").createElement;
-var showLoadingImage = __webpack_require__(/*! ../../_common/utility */ "./src/javascript/_common/utility.js").showLoadingImage;
 
 var os_list = [{
     name: 'mac',
@@ -39319,21 +39317,14 @@ var os_list = [{
     url_test: /\.exe$/
 }];
 
-var addLoader = function addLoader() {
-    var container = getElementById('content-holder');
-    var content = getElementById('content');
-    var loading_spinner = createElement('div', { html: '' });
-    container.appendChild(loading_spinner);
-    content.setVisibility(0);
-    showLoadingImage(loading_spinner);
-    BinarySocket.wait('authorize').then(function () {
-        content.setVisibility(1);
-        container.removeChild(loading_spinner);
-    });
-};
 var Platforms = function () {
     var onLoad = function onLoad() {
-        addLoader();
+        var staticFull = getElementById('static_full');
+        var loadingImage = getElementById('loading_image');
+        BinarySocket.wait('authorize').then(function () {
+            staticFull.setVisibility(1);
+            loadingImage.setVisibility(0);
+        });
         BinarySocket.wait('website_status').then(function () {
             $('.desktop-app').setVisibility(isIndonesia() && !isBinaryApp());
         });
