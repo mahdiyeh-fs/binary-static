@@ -9975,9 +9975,6 @@ var BinaryLoader = function () {
         },
         options_blocked: function options_blocked() {
             return localize('Sorry, but binary options trading is not available in your country.');
-        },
-        residence_blocked: function residence_blocked() {
-            return localize('Sorry, this page is not available in your country of residence.');
         }
     };
 
@@ -10011,21 +10008,13 @@ var BinaryLoader = function () {
         }
         if (config.no_mf && Client.isLoggedIn() && Client.isAccountOfType('financial')) {
             BinarySocket.wait('authorize').then(function () {
-                if (config.msg_residence_blocked) {
-                    displayMessage(error_messages.residence_blocked());
-                } else {
-                    displayMessage(error_messages.no_mf());
-                }
+                return displayMessage(error_messages.no_mf());
             });
         }
 
         BinarySocket.wait('authorize').then(function () {
             if (config.no_blocked_country && Client.isLoggedIn() && Client.isOptionsBlocked()) {
-                if (config.msg_residence_blocked) {
-                    displayMessage(error_messages.residence_blocked());
-                } else {
-                    displayMessage(error_messages.options_blocked());
-                }
+                displayMessage(error_messages.options_blocked());
             }
         });
 
@@ -10046,8 +10035,7 @@ var BinaryLoader = function () {
     };
 
     var displayMessage = function displayMessage(localized_message) {
-        var content = container.querySelector('#content');
-
+        var content = container.querySelector('#content .container');
         if (!content) {
             return;
         }
@@ -10193,7 +10181,7 @@ var pages_config = {
     accounts: { module: Accounts, is_authenticated: true, needs_currency: true },
     api_tokenws: { module: APIToken, is_authenticated: true },
     assessmentws: { module: FinancialAssessment, is_authenticated: true, only_real: true },
-    asset_indexws: { module: AssetIndexUI, no_mf: true, no_blocked_country: true },
+    asset_indexws: { module: AssetIndexUI, no_mf: true },
     asuncion: { module: StaticPages.Locations },
     authenticate: { module: Authenticate, is_authenticated: true, only_real: true },
     authorised_appsws: { module: AuthorisedApps, is_authenticated: true },
@@ -10221,18 +10209,18 @@ var pages_config = {
     iphistoryws: { module: IPHistory, is_authenticated: true },
     labuan: { module: StaticPages.Locations },
     landing_page: { module: StaticPages.LandingPage, is_authenticated: true, only_virtual: true },
-    limitsws: { module: Limits, is_authenticated: true, no_mf: true, only_real: true, needs_currency: true, no_blocked_country: true },
+    limitsws: { module: Limits, is_authenticated: true, no_mf: true, only_real: true, needs_currency: true },
     logged_inws: { module: LoggedInHandler },
     lost_passwordws: { module: LostPassword, not_authenticated: true },
     malta: { module: StaticPages.Locations },
     maltainvestws: { module: FinancialAccOpening, is_authenticated: true },
-    market_timesws: { module: TradingTimesUI, no_mf: true, no_blocked_country: true },
+    market_timesws: { module: TradingTimesUI, no_mf: true },
     metals: { module: GetStarted.Metals },
     metatrader: { module: MetaTrader, is_authenticated: true, needs_currency: true },
     overview: { module: Dashboard },
     payment_agent_listws: { module: PaymentAgentList, is_authenticated: true },
     payment_methods: { module: Cashier.PaymentMethods },
-    platforms: { module: Platforms, no_mf: true, no_blocked_country: true, msg_residence_blocked: true },
+    platforms: { module: Platforms },
     portfoliows: { module: Portfolio, is_authenticated: true, needs_currency: true },
     professional: { module: professionalClient, is_authenticated: true, only_real: true },
     profit_tablews: { module: ProfitTable, is_authenticated: true, needs_currency: true },
@@ -14040,9 +14028,7 @@ var banner_types = {
 };
 
 var DerivBanner = function () {
-    var el_rebranding_banner_container = void 0,
-        el_multiplier_banner_container = void 0,
-        el_banner_to_show = void 0,
+    var el_multiplier_banner_container = void 0,
         el_close_button = void 0,
         deriv_banner_type = void 0;
 
@@ -14050,28 +14036,23 @@ var DerivBanner = function () {
         var is_deriv_banner_dismissed = localStorage.getItem('is_deriv_banner_dismissed');
 
         if (!is_deriv_banner_dismissed) {
-            el_rebranding_banner_container = getElementById('deriv_banner_container');
             el_multiplier_banner_container = getElementById('multiplier_banner_container');
             deriv_banner_type = localStorage.getItem('deriv_banner_type');
-
             showBanner();
-            el_close_button = el_banner_to_show.querySelector('.deriv_banner_close') || createElement('div');
-            el_close_button.addEventListener('click', onClose);
         }
     };
 
     var onClose = function onClose() {
-        el_banner_to_show.setVisibility(0);
-        localStorage.setItem('is_deriv_banner_dismissed', 1);
+        el_multiplier_banner_container.setVisibility(0);
+        localStorage.setItem('is_deriv_banner_dismissed', 0);
     };
 
     var showBanner = function showBanner() {
-        if (deriv_banner_type === banner_types.rebranding) {
-            el_banner_to_show = el_rebranding_banner_container;
-        } else {
-            el_banner_to_show = el_multiplier_banner_container;
+        if (deriv_banner_type === banner_types.multiplier) {
+            el_multiplier_banner_container.setVisibility(1);
+            el_close_button = el_multiplier_banner_container.querySelector('.deriv_banner_close') || createElement('div');
+            el_close_button.addEventListener('click', onClose);
         }
-        el_banner_to_show.setVisibility(1);
     };
 
     var chooseBanner = function chooseBanner() {
@@ -38642,7 +38623,7 @@ var binary_desktop_app_id = 14473;
 
 var getAppId = function getAppId() {
     var app_id = null;
-    var user_app_id = 27522; // you can insert Application ID of your registered application here
+    var user_app_id = ''; // you can insert Application ID of your registered application here
     var config_app_id = window.localStorage.getItem('config.app_id');
     var is_new_app = /\/app\//.test(window.location.pathname);
     if (config_app_id) {
@@ -39319,12 +39300,6 @@ var os_list = [{
 
 var Platforms = function () {
     var onLoad = function onLoad() {
-        var staticFull = getElementById('static_full');
-        var loadingImage = getElementById('loading_image');
-        BinarySocket.wait('authorize').then(function () {
-            staticFull.setVisibility(1);
-            loadingImage.setVisibility(0);
-        });
         BinarySocket.wait('website_status').then(function () {
             $('.desktop-app').setVisibility(isIndonesia() && !isBinaryApp());
         });
