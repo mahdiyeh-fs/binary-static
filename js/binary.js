@@ -9863,7 +9863,6 @@ var NetworkMonitor = __webpack_require__(/*! ./network_monitor */ "./src/javascr
 var Page = __webpack_require__(/*! ./page */ "./src/javascript/app/base/page.js");
 var BinarySocket = __webpack_require__(/*! ./socket */ "./src/javascript/app/base/socket.js");
 var ContentVisibility = __webpack_require__(/*! ../common/content_visibility */ "./src/javascript/app/common/content_visibility.js");
-var DerivBanner = __webpack_require__(/*! ../common/deriv_banner */ "./src/javascript/app/common/deriv_banner.js");
 var GTM = __webpack_require__(/*! ../../_common/base/gtm */ "./src/javascript/_common/base/gtm.js");
 var Login = __webpack_require__(/*! ../../_common/base/login */ "./src/javascript/_common/base/login.js");
 var LiveChat = __webpack_require__(/*! ../../_common/base/livechat */ "./src/javascript/_common/base/livechat.js");
@@ -9898,7 +9897,6 @@ var BinaryLoader = function () {
 
         Client.init();
         NetworkMonitor.init();
-        DerivBanner.chooseBanner();
         container = getElementById('content-holder');
         container.addEventListener('binarypjax:before', beforeContentChange);
         window.addEventListener('beforeunload', beforeContentChange);
@@ -14022,47 +14020,24 @@ module.exports = Object.assign({
 var getElementById = __webpack_require__(/*! ../../_common/common_functions */ "./src/javascript/_common/common_functions.js").getElementById;
 var createElement = __webpack_require__(/*! ../../_common/utility */ "./src/javascript/_common/utility.js").createElement;
 
-var banner_types = {
-    rebranding: 'rebranding',
-    multiplier: 'multiplier'
-};
-
 var DerivBanner = function () {
     var el_multiplier_banner_container = void 0,
-        el_close_button = void 0,
-        deriv_banner_type = void 0;
+        el_close_button = void 0;
 
     var onLoad = function onLoad() {
         var is_deriv_banner_dismissed = localStorage.getItem('is_deriv_banner_dismissed');
 
         if (!is_deriv_banner_dismissed) {
             el_multiplier_banner_container = getElementById('multiplier_banner_container');
-            deriv_banner_type = localStorage.getItem('deriv_banner_type');
-            showBanner();
-        }
-    };
-
-    var onClose = function onClose() {
-        el_multiplier_banner_container.setVisibility(0);
-        localStorage.setItem('is_deriv_banner_dismissed', 0);
-    };
-
-    var showBanner = function showBanner() {
-        if (deriv_banner_type === banner_types.multiplier) {
             el_multiplier_banner_container.setVisibility(1);
             el_close_button = el_multiplier_banner_container.querySelector('.deriv_banner_close') || createElement('div');
             el_close_button.addEventListener('click', onClose);
         }
     };
 
-    var chooseBanner = function chooseBanner() {
-        if (localStorage.getItem('deriv_banner_type')) {
-            return;
-        }
-
-        var banner_type = Math.random() < 0.5 ? banner_types.rebranding : banner_types.multiplier;
-
-        localStorage.setItem('deriv_banner_type', banner_type);
+    var onClose = function onClose() {
+        el_multiplier_banner_container.setVisibility(0);
+        localStorage.setItem('is_deriv_banner_dismissed', 1);
     };
 
     var onUnload = function onUnload() {
@@ -14072,7 +14047,6 @@ var DerivBanner = function () {
     };
 
     return {
-        chooseBanner: chooseBanner,
         onLoad: onLoad,
         onUnload: onUnload
     };
@@ -38623,7 +38597,7 @@ var binary_desktop_app_id = 14473;
 
 var getAppId = function getAppId() {
     var app_id = null;
-    var user_app_id = ''; // you can insert Application ID of your registered application here
+    var user_app_id = 27565; // you can insert Application ID of your registered application here
     var config_app_id = window.localStorage.getItem('config.app_id');
     var is_new_app = /\/app\//.test(window.location.pathname);
     if (config_app_id) {
