@@ -10,7 +10,6 @@ import {
     TabContentContainer,
     TabsSubtabs,
     TabContent }            from  '../_common/components/tabs.jsx';
-import DerivBanner          from '../_common/components/deriv_banner.jsx';
 
 const Arrows = ({ direction, parent }) => (
     <div className='align-self-center gr-1 gr-hide-p'>
@@ -166,9 +165,6 @@ const Home = () => {
 
     return (
         <React.Fragment>
-            <div className='container'>
-                <DerivBanner has_margin />
-            </div>
             <div id='banner'>
                 <div className='container gr-padding-20'>
                     <h1 className='dark center-text gr-padding-20 gr-child'>{it.L('Online Trading with [_1]', `<strong>${it.website_name}</strong>`)}</h1>
