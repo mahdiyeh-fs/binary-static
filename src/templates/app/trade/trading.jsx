@@ -2,10 +2,12 @@ import React from 'react';
 import Analysis from './analysis.jsx';
 import Portfolio from '../user/portfolio.jsx';
 import Loading from '../../_common/components/loading.jsx';
+import DerivBanner from '../../_common/components/deriv_banner.jsx';
 
 const Trading = () => (
     <React.Fragment>
         <div id='trading_socket_container'>
+            <DerivBanner />
             <div id='notifications_wrapper' />
             <div id='loading_container' className='overlay_container' />
             <a id='deposit_btn_trade' className='client_real invisible gr-hide-m button' href={it.url_for('cashier/forwardws?action=deposit')}>
