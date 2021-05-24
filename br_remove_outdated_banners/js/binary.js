@@ -14015,6 +14015,55 @@ module.exports = Object.assign({
 
 /***/ }),
 
+/***/ "./src/javascript/app/common/deriv_banner.js":
+/*!***************************************************!*\
+  !*** ./src/javascript/app/common/deriv_banner.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+
+var getElementById = __webpack_require__(/*! ../../_common/common_functions */ "./src/javascript/_common/common_functions.js").getElementById;
+var createElement = __webpack_require__(/*! ../../_common/utility */ "./src/javascript/_common/utility.js").createElement;
+
+var DerivBanner = function () {
+    var el_multiplier_banner_container = void 0,
+        el_close_button = void 0;
+
+    var onLoad = function onLoad() {
+        var is_deriv_banner_dismissed = localStorage.getItem('is_deriv_banner_dismissed');
+
+        if (!is_deriv_banner_dismissed) {
+            el_multiplier_banner_container = getElementById('multiplier_banner_container');
+            el_multiplier_banner_container.setVisibility(1);
+            el_close_button = el_multiplier_banner_container.querySelector('.deriv_banner_close') || createElement('div');
+            el_close_button.addEventListener('click', onClose);
+        }
+    };
+
+    var onClose = function onClose() {
+        el_multiplier_banner_container.setVisibility(0);
+        localStorage.setItem('is_deriv_banner_dismissed', 1);
+    };
+
+    var onUnload = function onUnload() {
+        if (el_close_button) {
+            el_close_button.removeEventListener('click', onClose);
+        }
+    };
+
+    return {
+        onLoad: onLoad,
+        onUnload: onUnload
+    };
+}();
+
+module.exports = DerivBanner;
+
+/***/ }),
+
 /***/ "./src/javascript/app/common/event_handler.js":
 /*!****************************************************!*\
   !*** ./src/javascript/app/common/event_handler.js ***!
@@ -26666,6 +26715,7 @@ var ViewPopup = __webpack_require__(/*! ../user/view_popup/view_popup */ "./src/
 var Client = __webpack_require__(/*! ../../base/client */ "./src/javascript/app/base/client.js");
 var Header = __webpack_require__(/*! ../../base/header */ "./src/javascript/app/base/header.js");
 var BinarySocket = __webpack_require__(/*! ../../base/socket */ "./src/javascript/app/base/socket.js");
+var DerivBanner = __webpack_require__(/*! ../../common/deriv_banner */ "./src/javascript/app/common/deriv_banner.js");
 var Guide = __webpack_require__(/*! ../../common/guide */ "./src/javascript/app/common/guide.js");
 var TopUpVirtualPopup = __webpack_require__(/*! ../../pages/user/account/top_up_virtual/pop_up */ "./src/javascript/app/pages/user/account/top_up_virtual/pop_up.js");
 var State = __webpack_require__(/*! ../../../_common/storage */ "./src/javascript/_common/storage.js").State;
@@ -26675,6 +26725,8 @@ var TradePage = function () {
     State.remove('is_trading');
 
     var onLoad = function onLoad() {
+        DerivBanner.onLoad();
+
         BinarySocket.wait('authorize').then(function () {
             init();
         });
@@ -26751,6 +26803,7 @@ var TradePage = function () {
         commonTrading.clean();
         BinarySocket.clear('active_symbols');
         TradingAnalysis.onUnload();
+        DerivBanner.onUnload();
     };
 
     var onDisconnect = function onDisconnect() {
@@ -38954,6 +39007,7 @@ var TabSelector = __webpack_require__(/*! ../../_common/tab_selector */ "./src/j
 var urlFor = __webpack_require__(/*! ../../_common/url */ "./src/javascript/_common/url.js").urlFor;
 var BinaryPjax = __webpack_require__(/*! ../../app/base/binary_pjax */ "./src/javascript/app/base/binary_pjax.js");
 var BinarySocket = __webpack_require__(/*! ../../app/base/socket */ "./src/javascript/app/base/socket.js");
+var DerivBanner = __webpack_require__(/*! ../../app/common/deriv_banner */ "./src/javascript/app/common/deriv_banner.js");
 var FormManager = __webpack_require__(/*! ../../app/common/form_manager */ "./src/javascript/app/common/form_manager.js");
 var getFormRequest = __webpack_require__(/*! ../../app/common/verify_email */ "./src/javascript/app/common/verify_email.js");
 var isBinaryApp = __webpack_require__(/*! ../../config */ "./src/javascript/config.js").isBinaryApp;
@@ -38964,6 +39018,7 @@ var Home = function () {
     var onLoad = function onLoad() {
         Login.initOneAll();
         TabSelector.onLoad();
+        DerivBanner.onLoad();
 
         BinarySocket.wait('website_status', 'authorize', 'landing_company').then(function () {
             clients_country = State.getResponse('website_status.clients_country');
@@ -39017,6 +39072,7 @@ var Home = function () {
 
     var onUnload = function onUnload() {
         TabSelector.onUnload();
+        DerivBanner.onUnload();
     };
 
     return {
