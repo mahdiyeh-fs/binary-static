@@ -9960,7 +9960,7 @@ var BinaryLoader = function () {
             return localize('Please [_1]log in[_2] or [_3]sign up[_4] to view this page.', ['<a href="' + 'javascript:;' + '">', '</a>', '<a href="' + urlFor('new-account') + '">', '</a>']);
         },
         only_virtual: function only_virtual() {
-            return localize('Sorry, this feature is available to virtual accounts only.');
+            return localize('This feature is available to virtual accounts only.');
         },
         only_real: function only_real() {
             return localize('This feature is not relevant to virtual-money accounts.');
