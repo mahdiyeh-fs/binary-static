@@ -1640,8 +1640,9 @@ body #not_authenticated_financial ul.checked > li {
 .authentication #onfido .onfido-sdk-ui-NavigationBar-back {
   background: transparent; }
 
-.authentication #onfido .onfido-sdk-ui-Button-button-primary:hover {
-  background: #353ff4; }
+.authentication #onfido .onfido-sdk-ui-crossDevice-CrossDeviceLink-numberInputSection .ods-button.-action--primary {
+  height: 100%;
+  font-size: 0.875em; }
 
 .authentication #onfido .onfido-sdk-ui-Button-button-outline:hover {
   background-color: transparent; }
@@ -1651,11 +1652,22 @@ body #not_authenticated_financial ul.checked > li {
   color: #000;
   border-radius: 0; }
 
+.authentication #onfido .onfido-sdk-ui-Theme-textButton:hover {
+  color: #000; }
+
+.authentication #onfido .onfido-sdk-ui-CustomFileInput-container .onfido-sdk-ui-Theme-button-lg {
+  background: #3640f5; }
+
+.authentication #onfido .onfido-sdk-ui-CustomFileInput-container button {
+  background: transparent; }
+  .authentication #onfido .onfido-sdk-ui-CustomFileInput-container button:hover {
+    background: #5c6cff; }
+
 .authentication #onfido input:hover, .authentication #onfido input:focus, .authentication #onfido textarea:hover, .authentication #onfido textarea:focus {
   outline: 0;
   border: none; }
 
-.authentication #onfido button:not(.onfido-sdk-ui-Theme-link):not(.onfido-sdk-ui-Button-button-primary):hover, .authentication #onfido button:not(.onfido-sdk-ui-Theme-link):not(.onfido-sdk-ui-Button-button-primary):focus {
+.authentication #onfido button:not(.onfido-sdk-ui-Theme-link):not(.ods-button):hover, .authentication #onfido button:not(.onfido-sdk-ui-Theme-link):not(.ods-button):focus {
   background-color: inherit; }
 
 .authentication .fields > .gr-row > div > .button {
@@ -2189,11 +2201,31 @@ body #not_authenticated_financial ul.checked > li {
       .why-us-content .awards-section .horizontal-margin {
         margin: 15px 15px 20px; } }
 
+.account-closure .notice-msg-wrapper {
+  background-color: #fef1cf;
+  margin-top: 65px; }
+
+.account-closure .notice-msg-text {
+  color: #000;
+  overflow: hidden;
+  margin: 0;
+  text-align: center; }
+
 .account-closure-form {
   text-align: left;
   line-height: 40px; }
-  .account-closure-form span {
-    padding-left: 15px; }
+  .account-closure-form .margin-top-20 {
+    margin-top: 20px; }
+  .account-closure-form .textarea-container {
+    display: grid; }
+  .account-closure-form p {
+    font-size: 1rem; }
+  .account-closure-form textarea {
+    width: 90%;
+    max-width: 350px;
+    height: 80px;
+    margin-top: 10px;
+    margin-bottom: 10px; }
 
 .account-closure-subtitle {
   margin-top: 0;
