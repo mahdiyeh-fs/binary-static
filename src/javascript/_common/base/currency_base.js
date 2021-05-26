@@ -1,4 +1,3 @@
-const getLanguage      = require('../language').get;
 const localize         = require('../localize').localize;
 const getPropertyValue = require('../utility').getPropertyValue;
 
@@ -20,7 +19,7 @@ const formatMoney = (currency_value, amount, exclude_currency, decimals = 0, min
             minimumFractionDigits: minimumFractionDigits || decimal_places,
             maximumFractionDigits: decimal_places,
         };
-        money = new Intl.NumberFormat(getLanguage().toLowerCase().replace('_', '-'), options).format(money);
+        money = new Intl.NumberFormat('en-EN', options).format(money);
     } else {
         money = addComma(money, decimal_places);
     }
