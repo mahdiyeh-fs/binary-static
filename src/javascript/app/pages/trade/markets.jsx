@@ -79,7 +79,7 @@ class Markets extends React.Component {
             const submarket = Object.keys(this.markets[market_symbol].submarkets).sort(sortSubmarket)[0];
             underlying_symbol = Object.keys(this.markets[market_symbol].submarkets[submarket].symbols).sort()[0];
         }
-        const markets_arr = Object.entries(this.markets).sort((a, b) => sortSubmarket(a[0], b[0]));
+        const markets_arr = Object.entries(this.markets).sort((a, b) => sortSubmarket(a[0], b[0])).filter(market => market[0] !== 'cryptocurrency');
         this.markets_all = markets_arr.slice();
         if (!(market_symbol in this.markets)) {
             market_symbol = Object.keys(this.markets).find(m => this.markets[m].submarkets[market_symbol]);
