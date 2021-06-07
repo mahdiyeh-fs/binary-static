@@ -23867,12 +23867,16 @@ var Markets = (_temp = _class = function (_React$Component) {
             var submarket = Object.keys(_this.markets[market_symbol].submarkets).sort(_active_symbols.sortSubmarket)[0];
             underlying_symbol = Object.keys(_this.markets[market_symbol].submarkets[submarket].symbols).sort()[0];
         }
-        var markets_arr = Object.entries(_this.markets).sort(function (a, b) {
+        var is_not_crypto = function is_not_crypto(symbol) {
+            return !/^(cry|JD)/i.test(symbol);
+        };
+        var market_arr = Object.entries(_this.markets).sort(function (a, b) {
             return (0, _active_symbols.sortSubmarket)(a[0], b[0]);
-        }).filter(function (market) {
-            return market[0] !== 'cryptocurrency';
         });
-        _this.markets_all = markets_arr.slice();
+        var non_crypto_markets_arr = market_arr.filter(function (market) {
+            return is_not_crypto(market);
+        });
+        _this.markets_all = non_crypto_markets_arr.slice();
         if (!(market_symbol in _this.markets)) {
             market_symbol = Object.keys(_this.markets).find(function (m) {
                 return _this.markets[m].submarkets[market_symbol];
@@ -23891,7 +23895,7 @@ var Markets = (_temp = _class = function (_React$Component) {
                 symbol: underlying_symbol,
                 name: _this.underlyings[underlying_symbol]
             },
-            markets: markets_arr,
+            markets: non_crypto_markets_arr,
             active_market: market_symbol,
             query: '',
             open_dropdown_scroll_id: 0
