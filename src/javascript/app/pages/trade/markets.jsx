@@ -73,7 +73,7 @@ class Markets extends React.Component {
         let market_symbol = Defaults.get('market');
         let final_markets_arr,
             final_market_obj;
-            
+
         const market_list = Symbols.markets();
         this.markets = getAvailableUnderlyings(market_list);
         
@@ -86,8 +86,9 @@ class Markets extends React.Component {
         const is_not_crypto = symbol => !/^(cry|JD)/i.test(symbol);
         const is_synthetic = symbol => /^(synthetic)/i.test(symbol);
         const is_uk = State.getResponse('authorize.country') === 'gb';
+        const is_malta = State.getResponse('landing_company.gaming_company.shortcode') === 'malta';
         const market_arr = Object.entries(this.markets).sort((a, b) => sortSubmarket(a[0], b[0]));
-        if ((Client.isMalta() || is_uk) && Client.getAccountOfType('virtual')) {
+        if ((is_malta || is_uk) && Client.getAccountOfType('virtual')) {
             final_markets_arr = market_arr.filter(market => is_synthetic(market));
             final_market_obj = Object.fromEntries(final_markets_arr);
             market_symbol = Object.keys(final_market_obj)[0];
