@@ -57,7 +57,7 @@ const TypesOfAccounts = () => (
                 className='hide-maltainvest'
                 image='financial'
                 title={it.L('Financial')}
-                text={it.L('The Financial account offers new and experienced traders high leverage and variable spreads for maximum flexibility. Trade commodities, cryptocurrencies, major (standard and micro-lots), minor currency pairs with high leverage, and stocks & indices.')}
+                text={it.L('The Financial account offers new and experienced traders high leverage and variable spreads for maximum flexibility. Trade commodities, cryptocurrencies, major (standard and micro-lots), minor currency pairs, and stocks & indices with high leverage.')}
             />
             <Box
                 className='hide-maltainvest'
