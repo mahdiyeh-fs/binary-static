@@ -739,13 +739,6 @@ var ClientBase = function () {
         }
     };
 
-    var isMalta = function isMalta() {
-        var malta_countries = ['at', 'be', 'bg', 'cy', 'cz', 'dk', 'ee', 'fi', 'hr', 'hu', 'ie', 'lt', 'lv', 'nl', 'pl', 'pt', 'ro', 'se', 'si', 'sk'];
-        var country = State.getResponse('authorize.country');
-
-        return malta_countries.includes(country);
-    };
-
     return {
         init: init,
         isLoggedIn: isLoggedIn,
@@ -777,8 +770,7 @@ var ClientBase = function () {
         getRiskAssessment: getRiskAssessment,
         canTransferFunds: canTransferFunds,
         hasSvgAccount: hasSvgAccount,
-        canChangeCurrency: canChangeCurrency,
-        isMalta: isMalta
+        canChangeCurrency: canChangeCurrency
     };
 }();
 
@@ -13235,6 +13227,10 @@ var ActiveSymbols = function () {
 
     // The unavailable underlyings are only offered on deriv.com.
     var unavailable_underlyings = ['BOOM500', 'BOOM1000', 'CRASH500', 'CRASH1000', 'stpRNG'];
+    var is_jd = function is_jd(symbol) {
+        return (/^(JD)/i.test(symbol)
+        );
+    };
 
     var getAvailableUnderlyings = function getAvailableUnderlyings(markets_list) {
         var markets_list_clone = clone(markets_list);
@@ -13244,6 +13240,12 @@ var ActiveSymbols = function () {
                 removeObjProperties(unavailable_underlyings, markets_list_clone[market_key].submarkets[submarket_key].symbols);
                 if (Object.keys(markets_list_clone[market_key].submarkets[submarket_key].symbols).length === 0) {
                     delete markets_list_clone[market_key].submarkets[submarket_key];
+                } else {
+                    Object.keys(markets_list_clone[market_key].submarkets[submarket_key].symbols).forEach(function (symbol) {
+                        if (is_jd(symbol)) {
+                            delete markets_list_clone[market_key].submarkets[submarket_key];
+                        }
+                    });
                 }
             });
             if (Object.keys(markets_list_clone[market_key].submarkets).length === 0) {
@@ -21383,10 +21385,11 @@ var Markets = (_temp = _class = function (_React$Component) {
             );
         };
         var is_uk = _storage.State.getResponse('authorize.country') === 'gb';
+        var is_mlt = _storage.State.getResponse('landing_company.gaming_company.shortcode') === 'malta';
         var markets_arr = Object.entries(_this.markets).sort(function (a, b) {
             return (0, _active_symbols.sortSubmarket)(a[0], b[0]);
         });
-        if ((_client2.default.isMalta() || is_uk) && _client2.default.getAccountOfType('virtual')) {
+        if ((is_mlt || is_uk) && _client2.default.getAccountOfType('virtual')) {
             final_markets_arr = markets_arr.filter(function (market) {
                 return is_synthetic(market);
             });
@@ -24298,7 +24301,7 @@ var TradePage = function () {
             el_iframe.src = iframe_target_origin + '/localstorage-sync.html';
         }
 
-        BinarySocket.wait('authorize').then(function () {
+        BinarySocket.wait('authorize', 'landing_company').then(function () {
             init();
         });
     };
