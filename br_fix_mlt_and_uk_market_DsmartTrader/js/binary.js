@@ -13227,6 +13227,10 @@ var ActiveSymbols = function () {
 
     // The unavailable underlyings are only offered on deriv.com.
     var unavailable_underlyings = ['BOOM500', 'BOOM1000', 'CRASH500', 'CRASH1000', 'stpRNG'];
+    var is_jd = function is_jd(symbol) {
+        return (/^(JD)/i.test(symbol)
+        );
+    };
 
     var getAvailableUnderlyings = function getAvailableUnderlyings(markets_list) {
         var markets_list_clone = clone(markets_list);
@@ -13236,6 +13240,12 @@ var ActiveSymbols = function () {
                 removeObjProperties(unavailable_underlyings, markets_list_clone[market_key].submarkets[submarket_key].symbols);
                 if (Object.keys(markets_list_clone[market_key].submarkets[submarket_key].symbols).length === 0) {
                     delete markets_list_clone[market_key].submarkets[submarket_key];
+                } else {
+                    Object.keys(markets_list_clone[market_key].submarkets[submarket_key].symbols).forEach(function (symbol) {
+                        if (is_jd(symbol)) {
+                            delete markets_list_clone[market_key].submarkets[submarket_key];
+                        }
+                    });
                 }
             });
             if (Object.keys(markets_list_clone[market_key].submarkets).length === 0) {
@@ -21375,11 +21385,11 @@ var Markets = (_temp = _class = function (_React$Component) {
             );
         };
         var is_uk = _storage.State.getResponse('authorize.country') === 'gb';
-        var is_malta = _storage.State.getResponse('landing_company.gaming_company.shortcode') === 'malta';
+        var is_mlt = _storage.State.getResponse('landing_company.gaming_company.shortcode') === 'malta';
         var markets_arr = Object.entries(_this.markets).sort(function (a, b) {
             return (0, _active_symbols.sortSubmarket)(a[0], b[0]);
         });
-        if ((is_malta || is_uk) && _client2.default.getAccountOfType('virtual')) {
+        if ((is_mlt || is_uk) && _client2.default.getAccountOfType('virtual')) {
             final_markets_arr = markets_arr.filter(function (market) {
                 return is_synthetic(market);
             });
@@ -29017,7 +29027,7 @@ var binary_desktop_app_id = 14473;
 
 var getAppId = function getAppId() {
     var app_id = null;
-    var user_app_id = 27949; // you can insert Application ID of your registered application here
+    var user_app_id = ''; // you can insert Application ID of your registered application here
     var config_app_id = window.localStorage.getItem('config.app_id');
     var is_new_app = /\/app\//.test(window.location.pathname);
     if (config_app_id) {
