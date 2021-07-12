@@ -460,13 +460,14 @@ const Header = (() => {
             } else {
                 const el_account_status = createElement('span', { class: 'authenticated', 'data-balloon': localize('Account Authenticated'), 'data-balloon-pos': 'down' });
                 BinarySocket.wait('website_status', 'get_account_status', 'get_settings', 'balance').then(() => {
-                    authentication = State.getResponse('get_account_status.authentication') || {};
-                    get_account_status = State.getResponse('get_account_status') || {};
+                    /* eslint-disable max-len */
+                    authentication               = State.getResponse('get_account_status.authentication') || {};
+                    get_account_status           = State.getResponse('get_account_status') || {};
                     const has_cashier_validation = !!get_account_status.cashier_validation;
-                    const cashier_validation = has_cashier_validation ? [...get_account_status.cashier_validation] : [];
-                    status             = [...cashier_validation , ...get_account_status.status];
+                    const cashier_validation     = has_cashier_validation ? [...get_account_status.cashier_validation] : [];
+                    status                       = [...cashier_validation , ...get_account_status.status];
                     checkStatus(check_statuses_real);
-                    is_fully_authenticated = hasStatus('authenticated') && !+get_account_status.prompt_client_to_authenticate;
+                    is_fully_authenticated       = hasStatus('authenticated') && !+get_account_status.prompt_client_to_authenticate;
                     $('.account-id')[is_fully_authenticated ? 'append' : 'remove'](el_account_status);
                 });
             }
