@@ -19,6 +19,7 @@ const isBinaryApp            = require('../../../config').isBinaryApp;
 
 const DepositWithdraw = (() => {
     const default_iframe_height = 700;
+    const is_crypto = Currency.isCryptocurrency(Client.get('currency'));
 
     let response_withdrawal = {};
 
@@ -262,6 +263,14 @@ const DepositWithdraw = (() => {
         const response_get_account_status = State.get(['response', 'get_account_status']);
         if (!response_get_account_status.error) {
             if (/cashier_locked/.test(response_get_account_status.get_account_status.status)) {
+                if (/system_maintanance/.test(response_get_account_status.get_account_status.cashier_validation)) {
+                    if (is_crypto) {
+                        showError('custom_error', localize('Sorry, crypto cashier is temporarily unavailable due to system maintenance.'));
+                    } else {
+                        showError('custom_error', localize('Sorry, cashier is temporarily unavailable due to system maintenance.'));
+                    }
+                    return;
+                }
                 if (/ASK_UK_FUNDS_PROTECTION/.test(response_get_account_status.get_account_status.cashier_validation)) {
                     initUKGC();
                     return;
