@@ -299,7 +299,7 @@ const Header = (() => {
 
             const buildMessage = (string, path, hash = '') => template(string, [`<a href="${Url.urlFor(path)}${hash}">`, '</a>']);
             const buildSpecificMessage = (string, additional) => template(string, [...additional]);
-            const buildMessageHref = (string, href) => template(string, [`<a href="${href}">`, '</a>']);
+            const buildMessageHref = (string, href) => template(string, [`<a href="${href}" target="_blank">`, '</a>']);
             const hasStatus = (string) => status.findIndex(s => s === string) < 0 ? Boolean(false) : Boolean(true);
             const hasVerification = (string) => {
                 const { prompt_client_to_authenticate } = get_account_status;
