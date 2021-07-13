@@ -359,6 +359,7 @@ const Header = (() => {
             const messages = {
                 cashier_locked          : () => buildMessageHref(localizeKeepPlaceholders('We’re updating our cashier system and it’ll be back online soon. Please see our [_1]status page[_2] for updates.'), 'https://deriv.statuspage.io/'),
                 system_maintenance      : () => buildMessageHref(localizeKeepPlaceholders('We’re updating our cashier system and it’ll be back online soon. Please see our [_1]status page[_2] for updates.'), 'https://deriv.statuspage.io/'),
+                cashier_locked_status   : () => buildMessage(localizeKeepPlaceholders('We’re sorry but your cashier is currently locked.To find out more, please contact us via live chat.')),
                 currency                : () => buildMessage(localizeKeepPlaceholders('Please set the [_1]currency[_2] of your account.'),                                                                                    'user/set-currency'),
                 unsubmitted             : () => buildMessage(localizeKeepPlaceholders('Please submit your [_1]proof of identity and proof of address[_2].'),                                                                  'user/authenticate'),
                 expired                 : () => buildSpecificMessage(localizeKeepPlaceholders('Your [_1]proof of identity[_3] and [_2]proof of address[_3] have expired.'),                                                   [`<a href='${Url.urlFor('user/authenticate')}'>`, `<a href='${Url.urlFor('user/authenticate')}?authentication_tab=poa'>`, '</a>']),
@@ -388,6 +389,7 @@ const Header = (() => {
             const validations = {
                 cashier_locked          : () => hasStatus('cashier_locked'),
                 system_maintenance      : () => hasStatus('system_maintenance'),
+                cashier_locked_status   : () => hasStatus('cashier_locked_status'),
                 currency                : () => !Client.get('currency'),
                 unsubmitted             : () => hasVerification('unsubmitted'),
                 expired                 : () => hasVerification('expired'),
@@ -433,6 +435,7 @@ const Header = (() => {
                 'unwelcome',
                 'no_withdrawal_or_trading',
                 'system_maintenance',
+                'cashier_locked_status',
                 'cashier_locked',
                 'withdrawal_locked_review',
                 'withdrawal_locked',
