@@ -19,8 +19,6 @@ const isBinaryApp            = require('../../../config').isBinaryApp;
 
 const DepositWithdraw = (() => {
     const default_iframe_height = 700;
-    const is_crypto = Currency.isCryptocurrency(Client.get('currency'));
-
     let response_withdrawal = {};
 
     let cashier_type,
@@ -258,16 +256,17 @@ const DepositWithdraw = (() => {
         }
 
         await BinarySocket.send({ get_account_status: 1 });
-
+        
         // cannot use State.getResponse because we want to check error which is outside of response[msg_type]
         const response_get_account_status = State.get(['response', 'get_account_status']);
         if (!response_get_account_status.error) {
+            const is_crypto = Currency.isCryptocurrency(Client.get('currency'));
             if (/cashier_locked/.test(response_get_account_status.get_account_status.status)) {
-                if (/system_maintanance/.test(response_get_account_status.get_account_status.cashier_validation)) {
+                if (/system_maintenance/.test(response_get_account_status.get_account_status.cashier_validation)) {
                     if (is_crypto) {
-                        showError('custom_error', localize('Sorry, crypto cashier is temporarily unavailable due to system maintenance.'));
+                        showError('custom_error', localize('Our cryptocurrency cashier is temporarily down due to system maintenance. You can access the cashier as soon as the maintenance is complete..'));
                     } else {
-                        showError('custom_error', localize('Sorry, cashier is temporarily unavailable due to system maintenance.'));
+                        showError('custom_error', localize('Our cashier is temporarily down due to system maintenance. You can access the cashier as soon as the maintenance is complete.'));
                     }
                     return;
                 }
@@ -279,7 +278,7 @@ const DepositWithdraw = (() => {
                     showError('limits_error');
                     return;
                 }
-                    
+
                 showError('custom_error', localize('Your cashier is locked.')); // Locked from BO
                 return;
             }

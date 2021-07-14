@@ -357,7 +357,7 @@ const Header = (() => {
             const has_no_tnc_limit = is_svg;
 
             const messages = {
-                cashier_locked          : () => buildMessageHref(localizeKeepPlaceholders('We’re updating our cashier system and it’ll be back online soon. Please see our [_1]status page[_2] for updates.'), 'https://deriv.statuspage.io/'),
+                cashier_locked          : () => buildMessage(localizeKeepPlaceholders('Deposits and withdrawals have been disabled on your account. Please check your email for more details.')),
                 system_maintenance      : () => buildMessageHref(localizeKeepPlaceholders('We’re updating our cashier system and it’ll be back online soon. Please see our [_1]status page[_2] for updates.'), 'https://deriv.statuspage.io/'),
                 cashier_locked_status   : () => buildMessage(localizeKeepPlaceholders('We’re sorry but your cashier is currently locked.To find out more, please contact us via live chat.')),
                 currency                : () => buildMessage(localizeKeepPlaceholders('Please set the [_1]currency[_2] of your account.'),                                                                                    'user/set-currency'),
