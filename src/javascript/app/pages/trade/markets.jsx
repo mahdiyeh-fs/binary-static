@@ -83,7 +83,6 @@ class Markets extends React.Component {
             const submarket = Object.keys(this.markets[market_symbol].submarkets).sort(sortSubmarket)[0];
             underlying_symbol = Object.keys(this.markets[market_symbol].submarkets[submarket].symbols).sort()[0];
         }
-        const is_not_crypto = symbol => !/^(cry|JD)/i.test(symbol);
         const is_synthetic = symbol => /^(synthetic)/i.test(symbol);
         const is_uk = State.getResponse('authorize.country') === 'gb';
         const is_malta = State.getResponse('landing_company.gaming_company.shortcode') === 'malta';
@@ -95,7 +94,7 @@ class Markets extends React.Component {
             const submarket = Object.keys(final_market_obj[market_symbol].submarkets).sort(sortSubmarket)[0];
             underlying_symbol = Object.keys(final_market_obj[market_symbol].submarkets[submarket].symbols).sort()[0];
         } else {
-            final_markets_arr = market_arr.filter(market => is_not_crypto(market));
+            final_markets_arr = market_arr;
             final_market_obj = Object.fromEntries(final_markets_arr);
         }
         this.markets_all = final_markets_arr.slice();
