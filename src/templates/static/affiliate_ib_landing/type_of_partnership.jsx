@@ -258,18 +258,15 @@ const TypesOfPartnership = () => (
                                             { text: it.L('Asset'), attributes: { rowSpan: 2 } },
                                             { text: it.L('Commission per lot') },
                                         ],
-                                        [
-                                            { text: it.L('(1 standard forex lot is 100k units)'), className: 'center-text' },
-                                        ],
                                     ],
                                     tbody: [
                                         [
                                             { text: it.L('Forex') },
-                                            { text: it.L('5') },
+                                            { text: it.L('USD 2') },
                                         ],
                                         [
                                             { text: it.L('Metals') },
-                                            { text: it.L('5') },
+                                            { text: it.L('USD 4') },
                                         ],
                                     ],
                                 }}
