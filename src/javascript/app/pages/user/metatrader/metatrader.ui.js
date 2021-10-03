@@ -1045,6 +1045,10 @@ const MetaTraderUI = (() => {
         $('#page_msg').html(message).setVisibility(1);
         $('#mt_loading').remove();
     };
+    
+    const displayDirectButton = (selector) => {
+        $(selector).setVisibility(1);
+    };
 
     /**
      * @param {string} action
@@ -1265,6 +1269,7 @@ const MetaTraderUI = (() => {
         displayMainMessage,
         displayMessage,
         displayPageError,
+        displayDirectButton,
         disableButton,
         disableButtonLink,
         enableButton,
