@@ -149,16 +149,13 @@
     "exclude": "typings",
     "extension": [
       ".js",
-      ".ts",
-      ".jsx",
-      ".tsx"
+      ".jsx"
     ],
     "sourceMap": true,
     "instrument": true,
     "include": [
-      "src/javascript/**/*.{js, ts, jsx, tsx}",
-      "scripts/**/*.{js, ts, jsx, tsx}"
-    ],
-    "cache": false
+      "src/javascript/**/*.{js, jsx }",
+      "scripts/**/*.{js, jsx}"
+    ]
   }
 }
