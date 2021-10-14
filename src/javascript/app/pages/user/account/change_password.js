@@ -125,8 +125,8 @@ const ChangePassword = (() => {
         $change_password_loading.setVisibility(1);
 
         BinarySocket.wait('get_account_status').then((response) => {
-            const account_status = response.get_account_status.status;
-            const has_social_signup      = hasSocialSignup();
+            const account_status        = response.get_account_status.status;
+            const has_social_signup     = hasSocialSignup();
             $change_password_loading.setVisibility(0);
             $change_password_container.setVisibility(1);
 
