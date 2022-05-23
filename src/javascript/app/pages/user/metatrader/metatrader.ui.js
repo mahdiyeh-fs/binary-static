@@ -732,7 +732,7 @@ const MetaTraderUI = (() => {
         );
 
     const shouldSetTradingPassword = () => {
-        const { status } = State.getResponse('get_account_status');
+        const { status } = State.getResponse('get_account_status') || {};
 
         return Array.isArray(status) && status.includes('mt5_password_not_set');
     };
